@@ -1,10 +1,5 @@
 use std::borrow::Cow;
-use std::cell::UnsafeCell;
 use std::collections::TryReserveError;
-
-thread_local! {
-  static ITA_BUFFER: UnsafeCell<itoa::Buffer> = UnsafeCell::new(itoa::Buffer::new());
-}
 
 macro_rules! count_digits {
   ($value:expr) => {{
@@ -31,13 +26,12 @@ macro_rules! impl_appendable_for_int {
         }
 
         fn push_to(&self, text: &mut String) {
-          ITA_BUFFER.with(|buffer| {
-            unsafe {
-              let mut buffer = *buffer.get();
-              let s = buffer.format(*self);
-              text.push_str(s);
-            }
-          });
+          let value = *self;
+          // no need to reuse buffers as per the documentation
+          // and as found in my benchmarks
+          let mut buffer = itoa::Buffer::new();
+          let s = buffer.format(value);
+          text.push_str(s);
         }
       }
     )*
@@ -136,7 +130,7 @@ impl<'a> StringBuilder<'a> {
     };
     build(&mut builder);
     let mut text = String::new();
-    text.try_reserve(builder.capacity)?;
+    text.try_reserve_exact(builder.capacity)?;
     builder.text = Some(text);
     build(&mut builder);
     debug_assert_eq!(builder.capacity, builder.text.as_ref().unwrap().len());
