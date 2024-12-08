@@ -32,7 +32,7 @@ jobs:
           save-if: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Format
-        run: dprint check
+        uses: dprint/check@v2.2
 
       - name: Lint
         run: cargo clippy --all-targets --all-features
