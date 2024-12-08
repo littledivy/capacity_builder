@@ -144,7 +144,7 @@ dependencies = [
 
 [[package]]
 name = "string_capacity"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "divan",
  "itoa",

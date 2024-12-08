@@ -137,7 +137,7 @@ impl<'a> StringBuilder<'a> {
     build(&mut builder);
     let mut text = String::new();
     text.try_reserve(builder.capacity)?;
-    builder.text = Some(String::with_capacity(builder.capacity));
+    builder.text = Some(text);
     build(&mut builder);
     debug_assert_eq!(builder.capacity, builder.text.as_ref().unwrap().len());
     Ok(builder.text.unwrap())
