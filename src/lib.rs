@@ -55,6 +55,18 @@ impl Appendable for &str {
   }
 }
 
+impl Appendable for &String {
+  #[inline(always)]
+  fn byte_len(&self) -> usize {
+    self.len()
+  }
+
+  #[inline(always)]
+  fn push_to(&self, text: &mut String) {
+    text.push_str(self);
+  }
+}
+
 impl<'a> Appendable for &'a Cow<'a, str> {
   #[inline(always)]
   fn byte_len(&self) -> usize {
