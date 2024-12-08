@@ -1,19 +1,24 @@
 use std::borrow::Cow;
+use std::cell::UnsafeCell;
 use std::collections::TryReserveError;
+
+thread_local! {
+  static ITA_BUFFER: UnsafeCell<itoa::Buffer> = UnsafeCell::new(itoa::Buffer::new());
+}
 
 macro_rules! count_digits {
   ($value:expr) => {{
     let mut value = $value;
     if value == 0 {
-      return 1;
+      1
+    } else {
+      let mut count = 0;
+      while value > 0 {
+        value /= 10;
+        count += 1;
+      }
+      count
     }
-
-    let mut count = 0;
-    while value > 0 {
-      value /= 10;
-      count += 1;
-    }
-    count
   }};
 }
 
@@ -26,9 +31,13 @@ macro_rules! impl_appendable_for_int {
         }
 
         fn push_to(&self, text: &mut String) {
-          let mut buffer = itoa::Buffer::new();
-          let s = buffer.format(*self);
-          text.push_str(s);
+          ITA_BUFFER.with(|buffer| {
+            unsafe {
+              let mut buffer = *buffer.get();
+              let s = buffer.format(*self);
+              text.push_str(s);
+            }
+          });
         }
       }
     )*
@@ -41,20 +50,24 @@ pub trait Appendable {
 }
 
 impl Appendable for &str {
+  #[inline(always)]
   fn byte_len(&self) -> usize {
     self.len()
   }
 
+  #[inline(always)]
   fn push_to(&self, text: &mut String) {
     text.push_str(self);
   }
 }
 
 impl<'a> Appendable for &'a Cow<'a, str> {
+  #[inline(always)]
   fn byte_len(&self) -> usize {
     self.len()
   }
 
+  #[inline(always)]
   fn push_to(&self, text: &mut String) {
     text.push_str(self);
   }
@@ -65,16 +78,19 @@ impl_appendable_for_int!(
 );
 
 impl Appendable for char {
+  #[inline(always)]
   fn byte_len(&self) -> usize {
     self.len_utf8()
   }
 
+  #[inline(always)]
   fn push_to(&self, text: &mut String) {
     text.push(*self);
   }
 }
 
 impl<T: Appendable> Appendable for Option<T> {
+  #[inline(always)]
   fn byte_len(&self) -> usize {
     match self {
       Some(value) => value.byte_len(),
@@ -82,6 +98,7 @@ impl<T: Appendable> Appendable for Option<T> {
     }
   }
 
+  #[inline(always)]
   fn push_to(&self, text: &mut String) {
     if let Some(value) = self {
       value.push_to(text);
@@ -90,10 +107,12 @@ impl<T: Appendable> Appendable for Option<T> {
 }
 
 impl<T: Appendable + ?Sized> Appendable for &T {
+  #[inline(always)]
   fn byte_len(&self) -> usize {
     (**self).byte_len()
   }
 
+  #[inline(always)]
   fn push_to(&self, text: &mut String) {
     (**self).push_to(text)
   }
@@ -124,6 +143,7 @@ impl<'a> StringBuilder<'a> {
     Ok(builder.text.unwrap())
   }
 
+  #[inline(always)]
   pub fn append(&mut self, value: impl Appendable + 'a) {
     match &mut self.text {
       Some(t) => value.push_to(t),
