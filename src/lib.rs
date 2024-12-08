@@ -89,7 +89,7 @@ impl<T: Appendable> Appendable for Option<T> {
   }
 }
 
-impl<'a, T: Appendable + ?Sized> Appendable for &'a T {
+impl<T: Appendable + ?Sized> Appendable for &T {
   fn byte_len(&self) -> usize {
     (**self).byte_len()
   }
