@@ -1,13 +1,20 @@
-# `string_capacity`
+# `capacity_builder`
 
-A string builder where the code to calculate the capacity is the same as the
-code to write the string.
+Builders where the code to calculate the capacity is the same as the code to
+write what's being built.
+
+Note: This crate is early in development and only has a string builder.
+
+## Overview
 
 Sometimes you have some complex code that would be a bit of a pain to calculate
-the capacity of or could easily lead to getting out of sync with the
-implementation. This crate makes that easier.
+the capacity of or could risk easily getting out of sync with the
+implementation. This crate makes keeping it in sync easier because it's the same
+code.
 
 ```rs
+use capacity_builder::StringBuilder;
+
 let text = StringBuilder::build(|builder| {
   for (i, import_module) in import_modules.iter().enumerate() {
     builder.append("// ");
@@ -26,14 +33,11 @@ time to write the string.
 ## Features
 
 1. The builder prevents adding owned strings—only references.
-
-- This helps to prevent accidentally allocating strings multiple times in the
-  closure.
-
+   - This helps to prevent accidentally allocating strings multiple times in the
+     closure.
 1. Errors when capacity cannot be reserved.
 1. Types other than string references can be provided.
-
-- Numbers get written with the [itoa](https://crates.io/crates/itoa) crate.
+   - Numbers get written with the [itoa](https://crates.io/crates/itoa) crate.
 
 ## Tips
 

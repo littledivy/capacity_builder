@@ -1,10 +1,10 @@
 [package]
-name = "string_capacity"
-version = "0.1.4"
+name = "capacity_builder"
+version = "0.1.0"
 edition = "2021"
 license = "MIT"
-repository = "https://github.com/dsherret/string_capacity"
-description = "String builder that calculates the capacity."
+repository = "https://github.com/dsherret/capacity_builder"
+description = "Builders where the code to calculate the capacity is the same as the code to write what's being built."
 
 [dependencies]
 itoa = "1.0.14"

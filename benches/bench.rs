@@ -1,4 +1,4 @@
-use string_capacity::StringBuilder;
+use capacity_builder::StringBuilder;
 
 fn main() {
   // Run registered benchmarks.
