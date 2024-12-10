@@ -3,8 +3,6 @@
 Builders where the code to calculate the capacity is the same as the code to
 write what's being built.
 
-Note: This crate is early in development and only has a string builder.
-
 ## Overview
 
 Sometimes you have some complex code that would be a bit of a pain to calculate
@@ -32,16 +30,14 @@ time to write the string.
 
 ## Features
 
-1. The builder prevents adding owned strings—only references.
-   - This helps to prevent accidentally allocating strings multiple times in the
+1. The builder prevents adding owned data—only references.
+   - This helps to prevent accidentally allocating data multiple times in the
      closure.
 1. Errors when capacity cannot be reserved.
-1. Types other than string references can be provided.
+1. For the string builder, types other than references can be provided.
    - Numbers get written with the [itoa](https://crates.io/crates/itoa) crate.
 
 ## Tips
 
 - Do any necessary allocations before running the closure.
 - Measure before and after using this crate to ensure you're not slower.
-- Probably don't use this crate if computing the capacity is simple.
-  - Though maybe it will create more maintainable code, so measure and see.
