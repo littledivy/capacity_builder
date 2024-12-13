@@ -7,7 +7,7 @@ repository = "https://github.com/dsherret/capacity_builder"
 description = "Builders where the code to calculate the capacity is the same as the code to write what's being built."
 
 [dependencies]
-itoa = "1.0.14"
+itoa = "1.0.11"
 
 [dev-dependencies]
 divan = "0.1.17"
